@@ -9,6 +9,7 @@
 #include "pxr/usd/usdGeom/camera.h"
 #include "pxr/imaging/hdSt/renderDelegate.h"
 #include "pxr/usdImaging/usdImaging/delegate.h"
+#include "pxr/imaging/hgi/tokens.h"
 
 using namespace pxr;
 
@@ -45,7 +46,14 @@ int main(int argc, char* argv[])
            // Hydra initialization
     HdEngine engine;
     HdStRenderDelegate renderDelegate;
+
+    auto _hgi = Hgi::CreatePlatformDefaultHgi();
     HdDriver hdDriver;
+    hdDriver.name = HgiTokens->renderDriver;
+    hdDriver.driver = VtValue(_hgi.get());
+    // 如果换成下面一行，则会直接在hgi这里报错
+    // HdDriver hdDriver;
+    
     HdRenderIndex* renderIndex = HdRenderIndex::New(&renderDelegate, HdDriverVector()); // q1
     UsdImagingDelegate sceneDelegate(renderIndex, SdfPath::AbsoluteRootPath());
     //// Create your task graph
